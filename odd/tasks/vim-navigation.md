@@ -20,7 +20,7 @@ Feature: navegación por teclado estilo Vim en Moji+, con setting para activar/d
 | T2 | S1,S2,S3,S4,S6 | inline | 78e6bb7 | done | Handler Vim global en App.tsx con guardas, scroll j/k/Ctrl+d/u/gg/G, secuencias gt/gT, foco Ctrl+H/Ctrl+L, /, ?, Ctrl+J/K en búsqueda. typecheck OK. |
 | T3 | S1,S2,S4 | inline | 78e6bb7 | done | Integrado en preview/split/tabs/sidebar; h/l/j/k en outline via plusOutlineKeys; j/k no scrollean preview cuando foco está en sidebar. |
 | T4 | S1,S7 | inline | 78e6bb7 | done | Indicador VIM en StatusBar + VimHelpDialog modal (plus-sheet-backdrop) + sección shortcuts en Settings + i18n brand overlays. |
-| T5 | S1-S7 | inline | 78e6bb7 | done | `npm run typecheck` OK, `npm run verify` (check-branding) OK. Smoke manual pendiente en GUI. |
+| T5 | S1-S7 | inline | 78e6bb7 | done | `npm run typecheck` OK, `npm run verify` (check-branding) OK. Smoke manual aprobado por el usuario (revisado y aprobado, 2026-11-25). |
 | T6 | S4,S6,S7 | inline | 2740629 | done | Refinamientos L5-L10: shortcuts dinámicos en Settings, / búsqueda, ? modal, Ctrl+J/K en búsqueda, Ctrl+H/L foco, h/l/j/k outline, 2do Esc limpia búsqueda. |
 
 ## Log
@@ -37,3 +37,4 @@ Feature: navegación por teclado estilo Vim en Moji+, con setting para activar/d
 - L10 (user feedback): "cuando pulse otra vez escape, debe de limpiarse el contenido del componente search..." — TopBar dismissRequest: si el panel ya está cerrado y hay término, limpia search/replace y llama onSearch("").
 - L11 (reviewer advisory): R2-001 (dedupe Vim shortcut metadata into src/lib/vimShortcuts.ts shared by SettingsDialog/VimHelpDialog) y R3-001 (vimHelpOpen permite Tab/Enter/Space para navegación de teclado en el modal). 
 - L12 (fix): Commit 51ee005 "fix: address vim review advisory findings R2-001 R3-001" addresses the L11 advisories (dedupe Vim shortcut metadata in src/lib/vimShortcuts.ts shared by SettingsDialog/VimHelpDialog; vimHelpOpen accepts Tab/Enter/Space). Also record that the branch was merged into next via merge commit 91ed83f.
+- L13 (validation): Smoke manual GUI del modo Vim realizado, revisado y aprobado por el usuario.

@@ -28,13 +28,13 @@
 
 <p align="center">
   <strong>Download v1.5.2:</strong>
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.5.2/Moji-Plus.Setup.1.5.2.exe">Windows</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.7.0/Moji-Plus.Setup.1.7.0.exe">Windows</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.5.2/Moji-Plus-1.5.2-universal.dmg">macOS (DMG)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.7.0/Moji-Plus-1.7.0-universal.dmg">macOS (DMG)</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.5.2/Moji-Plus-1.5.2-x86_64.AppImage">Linux (AppImage)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.7.0/Moji-Plus-1.7.0-x86_64.AppImage">Linux (AppImage)</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.5.2/Moji-Plus-1.5.2-amd64.deb">Linux (DEB)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.7.0/Moji-Plus-1.7.0-amd64.deb">Linux (DEB)</a>
 </p>
 
 <p align="center">

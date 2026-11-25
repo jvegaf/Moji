@@ -1357,3 +1357,143 @@
     --focus-ring: var(--accent);
   }
 }
+
+/* --- Command palette (Moji Plus) ---------------------------------------- */
+.plus-command-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 200px var(--space-4) var(--space-4);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.plus-command-palette {
+  width: min(680px, 100%);
+  max-height: min(480px, calc(100vh - 240px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+  animation: plus-sheet-in 0.16s ease-out;
+}
+
+.plus-command-palette__search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.plus-command-palette__scope {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-hover, rgba(127, 127, 127, 0.12));
+  color: var(--text-muted);
+  font-size: var(--text-caption, 12px);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.plus-command-palette__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--text-body);
+}
+
+.plus-command-palette__input::placeholder {
+  color: var(--text-muted);
+}
+
+.plus-command-palette__list {
+  overflow: auto;
+  padding: var(--space-2);
+}
+
+.plus-command-palette__empty {
+  padding: var(--space-4) var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--text-body);
+}
+
+.plus-command-palette__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.plus-command-palette__item:hover:not(.plus-command-palette__item--disabled),
+.plus-command-palette__item--active:not(.plus-command-palette__item--disabled) {
+  background: var(--bg-hover, rgba(127, 127, 127, 0.12));
+}
+
+.plus-command-palette__item--disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.plus-command-palette__item-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plus-command-palette__item-label {
+  font-size: var(--text-body);
+  line-height: 1.3;
+}
+
+.plus-command-palette__item-category {
+  color: var(--text-muted);
+  font-size: var(--text-caption, 12px);
+  line-height: 1.3;
+}
+
+.plus-command-palette__item-meta {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-caption, 12px);
+}
+
+.plus-command-palette__item-detail,
+.plus-command-palette__item-shortcut {
+  white-space: nowrap;
+}
+
+.plus-command-palette__item-shortcut {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.plus-command-palette__item-arrow {
+  font-size: 16px;
+  line-height: 1;
+}

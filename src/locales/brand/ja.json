@@ -149,6 +149,18 @@
       "unsavedManyMessage": "{{count}}個の書類に加えた変更を保存しますか?",
       "unsavedDetail": "保存しないと、変更内容は失われます。",
       "dontSave": "保存しない"
+    },
+    "commandPalette": {
+      "label": "Command palette",
+      "placeholder": "Type a command…",
+      "filterPlaceholder": "Filter options…",
+      "empty": "No results",
+      "settingsCategory": "Settings",
+      "current": "Current",
+      "on": "On",
+      "off": "Off",
+      "previewFontSize": "Preview font size",
+      "editorFontSize": "Editor font size"
     }
   },
   "notice": {

@@ -149,6 +149,18 @@
       "unsavedManyMessage": "要存储对 {{count}} 个文稿所做的更改吗？",
       "unsavedDetail": "如果不存储，你的更改将会丢失。",
       "dontSave": "不存储"
+    },
+    "commandPalette": {
+      "label": "Command palette",
+      "placeholder": "Type a command…",
+      "filterPlaceholder": "Filter options…",
+      "empty": "No results",
+      "settingsCategory": "Settings",
+      "current": "Current",
+      "on": "On",
+      "off": "Off",
+      "previewFontSize": "Preview font size",
+      "editorFontSize": "Editor font size"
     }
   },
   "notice": {

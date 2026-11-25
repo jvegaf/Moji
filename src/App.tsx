@@ -14,6 +14,7 @@ import type { EditorDocumentStats, EditorHandle, EditorIdleStats } from './compo
 import { SettingsDialog } from './components/SettingsDialog'
 import { AboutDialog } from './components/AboutDialog'
 import { VimHelpDialog } from './components/VimHelpDialog'
+import { CommandPalette } from './components/CommandPalette'
 import { UpdateNotice } from './components/UpdateNotice'
 import { ExportProgress } from './components/ExportProgress'
 import { OpenProgress } from './components/OpenProgress'
@@ -54,6 +55,7 @@ import {
 import packageJson from '../package.json'
 import { usePlusWindowDocument } from './lib/plusWindow'
 import { usePlusMenu } from './lib/plusMenu'
+import { buildCommandPaletteCommands } from './lib/commandPalette'
 import { PlusSidebarSlot } from './components/PlusSidebarSlot'
 import { PlusTabsPill } from './components/PlusTabsPill'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
@@ -350,6 +352,7 @@ export function App(): JSX.Element {
 
   const { dialogOpen, setDialogOpen, exportDialogFormat, setExportDialogFormat, settingsOpen, setSettingsOpen, aboutOpen, setAboutOpen, outlineVisible, setOutlineVisible, searchFocusRequest, setSearchFocusRequest, replaceFocusRequest, setReplaceFocusRequest, topBarDismissRequest, setTopBarDismissRequest } = usePanelState()
   const [vimHelpOpen, setVimHelpOpen] = useState(false)
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const dialogResolver = useRef<((c: ConfirmChoice) => void) | null>(null)
   const [externalDialog, setExternalDialog] = useState<{ variant: ExternalChangeVariant; name: string } | null>(null)
   const externalDialogResolver = useRef<((c: ExternalChangeChoice) => void) | null>(null)
@@ -400,7 +403,7 @@ export function App(): JSX.Element {
   const previewSchedule = getPreviewSchedule(activeDoc?.stats.length ?? 0)
   const virtualizedPreview = activeDoc?.sizeProfile === 'very-large'
   const workspaceWidth = useElementWidth(mainRef)
-  const panelOpen = exportDialogFormat !== null || settingsOpen || aboutOpen
+  const panelOpen = exportDialogFormat !== null || settingsOpen || aboutOpen || commandPaletteOpen
   /** Two panes below this width leave neither of them readable. */
   const splitFits = workspaceWidth >= SPLIT_MIN_WIDTH_PX
   // The split pairs the live preview with the source editor, so it only exists while editing.
@@ -498,6 +501,7 @@ export function App(): JSX.Element {
     settingsOpen: false,
     aboutOpen: false,
     vimHelpOpen: false,
+    commandPaletteOpen: false,
     canToggleSplit,
     splitView: settings.splitView,
     splitActive,
@@ -518,6 +522,7 @@ export function App(): JSX.Element {
     settingsOpen,
     aboutOpen,
     vimHelpOpen,
+    commandPaletteOpen,
     canToggleSplit,
     splitView: settings.splitView,
     splitActive,
@@ -1745,17 +1750,17 @@ export function App(): JSX.Element {
 
   const canTogglePreviewWidth = useCallback(() => {
     const s = stateRef.current
-    return s.hasDoc && (s.mode === 'view' || s.splitActive) && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen
+    return s.hasDoc && (s.mode === 'view' || s.splitActive) && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen && !s.commandPaletteOpen
   }, [])
 
   const canAdjustFontSize = useCallback(() => {
     const s = stateRef.current
-    return s.hasDoc && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen
+    return s.hasDoc && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen && !s.commandPaletteOpen
   }, [])
 
   const canToggleOutline = useCallback(() => {
     const s = stateRef.current
-    return s.hasDoc && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen
+    return s.hasDoc && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen && !s.commandPaletteOpen
   }, [])
 
   const toggleOutline = useCallback(() => {
@@ -2163,6 +2168,10 @@ export function App(): JSX.Element {
 
   const closeActivePanel = useCallback((): boolean => {
     const s = stateRef.current
+    if (s.commandPaletteOpen) {
+      setCommandPaletteOpen(false)
+      return true
+    }
     if (s.exportDialogOpen) {
       setExportDialogFormat(null)
       return true
@@ -2208,7 +2217,6 @@ export function App(): JSX.Element {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.isComposing || dialogOpen || externalDialog) return
-      if (vimHelpOpen && !['Escape', 'Tab', 'Enter', ' '].includes(event.key)) return
 
       const key = event.key.toLowerCase()
       const primary = event.ctrlKey || event.metaKey
@@ -2216,6 +2224,15 @@ export function App(): JSX.Element {
       // Chromium reports as Ctrl+Alt. Never consume that text input as an app shortcut.
       const altGraph = typeof event.getModifierState === 'function' && event.getModifierState('AltGraph')
       const onlyPrimary = primary && !event.altKey && !altGraph
+
+      if (onlyPrimary && !event.shiftKey && key === 'p') {
+        event.preventDefault()
+        setCommandPaletteOpen((open) => !open)
+        return
+      }
+
+      if (commandPaletteOpen) return
+      if (vimHelpOpen && !['Escape', 'Tab', 'Enter', ' '].includes(event.key)) return
 
       if (event.key === 'Escape') {
         event.preventDefault()
@@ -2490,7 +2507,8 @@ export function App(): JSX.Element {
     toggleMode,
     toggleSplitView,
     settings.vimNavigation,
-    vimHelpOpen
+    vimHelpOpen,
+    commandPaletteOpen
   ])
 
   // --- Wire main-process requests + pushed documents --------------------
@@ -2615,7 +2633,7 @@ export function App(): JSX.Element {
     ? `${dirty ? `${t('app.modifiedMarker')} ` : ''}${activeDoc ? documentName(activeDoc, t('app.untitled')) : ''}`
     : ''
   usePlusWindowDocument(activeDoc ? documentName(activeDoc, t('app.untitled')) : '', activeDoc?.path ?? null, hasDoc && dirty)
-  usePlusMenu(
+  const plusMenu = usePlusMenu(
     {
       hasDoc,
       readOnly: activeDoc?.readOnly === true,
@@ -2668,6 +2686,14 @@ export function App(): JSX.Element {
       about: openAbout
     }
   )
+
+  const commandPaletteCommands = useMemo(() => buildCommandPaletteCommands({
+    menu: plusMenu,
+    settings,
+    t,
+    state: { hasDoc, canAdjustFontSize: canAdjustFontSize() },
+    actions: { changeSettings }
+  }), [plusMenu, settings, t, hasDoc, canAdjustFontSize, changeSettings])
 
   const previewPane = activeDoc ? (
     <Preview
@@ -2890,6 +2916,12 @@ export function App(): JSX.Element {
         <div className="plus-sheet-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setVimHelpOpen(false)}>
           <VimHelpDialog onClose={() => setVimHelpOpen(false)} />
         </div>
+      )}
+      {commandPaletteOpen && (
+        <CommandPalette
+          commands={commandPaletteCommands}
+          onClose={() => setCommandPaletteOpen(false)}
+        />
       )}
     </div>
   )

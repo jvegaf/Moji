@@ -69,6 +69,8 @@ function fileName(path: string): string {
 /** The menu and the dispatcher of the window, for the app menu button (Windows and Linux). */
 let appMenu: PlusMenuItem[] = []
 let dispatchMenuCommand: (id: string) => void = () => {}
+/** Latest menu snapshot for the command palette (all platforms). */
+export let currentPlusMenu: PlusMenuItem[] = []
 
 /**
  * Windows and Linux: opens the app menu below `anchor` as a native popup, the way the Claude
@@ -85,7 +87,7 @@ export function runPlusMenuCommand(id: string): void {
   dispatchMenuCommand(id)
 }
 
-export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): void {
+export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): PlusMenuItem[] {
   const appName = BRAND_NAME
   const mac = window.api.platform === 'darwin'
   const { t, i18n } = useTranslation()
@@ -272,11 +274,13 @@ export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): voi
 
   const serialized = JSON.stringify(menu)
   useEffect(() => {
+    const snapshot = JSON.parse(serialized) as PlusMenuItem[]
+    currentPlusMenu = snapshot
     if (!mac) {
-      appMenu = JSON.parse(serialized) as PlusMenuItem[]
+      appMenu = snapshot
       return
     }
-    window.api.setMenu(JSON.parse(serialized) as PlusMenuItem[])
+    window.api.setMenu(snapshot)
   }, [mac, serialized, i18n.language])
 
   useEffect(() => {
@@ -308,4 +312,6 @@ export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): voi
     if (!mac) return
     return window.api.onMenuCommand(dispatch)
   }, [mac])
+
+  return menu
 }

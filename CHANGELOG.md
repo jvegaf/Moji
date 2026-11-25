@@ -6,6 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-25 — based on Moji 1.0.7
+
+### Added
+
+- Command palette (`Ctrl+P` / `Cmd+P`) with a modal search box near the top of the window. It filters as you type and includes menu commands and user-facing settings; settings toggles apply directly, and multi-value settings open a drill-in selection.
+
 ## [1.5.2] - 2026-10-19 — based on Moji 1.0.7
 
 ### Added

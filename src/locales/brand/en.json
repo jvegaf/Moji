@@ -149,6 +149,18 @@
       "unsavedManyMessage": "Do you want to save the changes made to {{count}} documents?",
       "unsavedDetail": "Your changes will be lost if you don’t save them.",
       "dontSave": "Don’t Save"
+    },
+    "commandPalette": {
+      "label": "Command palette",
+      "placeholder": "Type a command…",
+      "filterPlaceholder": "Filter options…",
+      "empty": "No results",
+      "settingsCategory": "Settings",
+      "current": "Current",
+      "on": "On",
+      "off": "Off",
+      "previewFontSize": "Preview font size",
+      "editorFontSize": "Editor font size"
     }
   },
   "notice": {

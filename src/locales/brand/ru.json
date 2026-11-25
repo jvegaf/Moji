@@ -149,6 +149,18 @@
       "unsavedManyMessage": "Сохранить изменения в документах ({{count}})?",
       "unsavedDetail": "Если не сохранить изменения, они будут потеряны.",
       "dontSave": "Не сохранять"
+    },
+    "commandPalette": {
+      "label": "Command palette",
+      "placeholder": "Type a command…",
+      "filterPlaceholder": "Filter options…",
+      "empty": "No results",
+      "settingsCategory": "Settings",
+      "current": "Current",
+      "on": "On",
+      "off": "Off",
+      "previewFontSize": "Preview font size",
+      "editorFontSize": "Editor font size"
     }
   },
   "notice": {

@@ -149,6 +149,18 @@
       "unsavedManyMessage": "هل تريد حفظ التغييرات التي أجريتها على {{count}} من المستندات؟",
       "unsavedDetail": "ستفقد تغييراتك إذا لم تحفظها.",
       "dontSave": "عدم الحفظ"
+    },
+    "commandPalette": {
+      "label": "Command palette",
+      "placeholder": "Type a command…",
+      "filterPlaceholder": "Filter options…",
+      "empty": "No results",
+      "settingsCategory": "Settings",
+      "current": "Current",
+      "on": "On",
+      "off": "Off",
+      "previewFontSize": "Preview font size",
+      "editorFontSize": "Editor font size"
     }
   },
   "notice": {

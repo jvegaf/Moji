@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-27 — based on Moji 1.0.7
+
 ### Added
 
 - Vim link navigation (`Ctrl+M`, `⌃M` on macOS): a focus ring moves across the links in the preview with `j`/`k`, `gg`/`G` and `Ctrl+D`/`Ctrl+U`, and `Enter` opens a linked Markdown document in a new tab while other targets keep the usual delegation to the system.

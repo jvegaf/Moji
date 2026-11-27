@@ -55,6 +55,11 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.8.0" date="2026-11-27">
+      <description>
+        <p>Based on Moji 1.0.7. Vim link navigation (Ctrl+M) moves a focus ring across the links in the preview and opens linked Markdown documents in a new tab.</p>
+      </description>
+    </release>
     <release version="1.7.0" date="2026-11-25">
       <description>
         <p>Based on Moji 1.0.7. Command palette (Ctrl+P) for menu commands and settings.</p>

@@ -101,3 +101,7 @@ refusal comment now describes the real fallback; `linkNavOwnsFocus` became `prev
 Markdown-extension rule and the half-page distance are shared instead of duplicated. The coverage
 advisory is accepted as-is: `.ai-framework/RULES.md` forbids reintroducing a test harness, and the pure
 logic is pinned by bounded ad-hoc checks run outside the repository.
+
+L6. User validated the Vim link-navigation smoke test. Release set to 1.8.0 (minor bump): the bump
+updated `package.json`, `package-lock.json` (root and `packages[""]` entries only), `CHANGELOG.md` and
+this log.

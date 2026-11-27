@@ -55,6 +55,8 @@
       "vimBottom": "Vai alla fine",
       "vimHalfDown": "Mezza pagina giù",
       "vimHalfUp": "Mezza pagina su",
+      "vimLinkMode": "Modalità di navigazione tra i collegamenti",
+      "vimLinkActivate": "Apri il collegamento selezionato",
       "vimNextTab": "Scheda successiva",
       "vimPrevTab": "Scheda precedente",
       "vimFocusSidebar": "Focus a sinistra (barra laterale)",

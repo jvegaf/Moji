@@ -55,6 +55,8 @@
       "vimBottom": "移至底端",
       "vimHalfDown": "向下半頁",
       "vimHalfUp": "向上半頁",
+      "vimLinkMode": "連結導覽模式",
+      "vimLinkActivate": "開啟聚焦的連結",
       "vimNextTab": "下一個分頁",
       "vimPrevTab": "上一個分頁",
       "vimFocusSidebar": "向左聚焦（側邊欄）",

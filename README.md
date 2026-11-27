@@ -75,7 +75,7 @@
 - **Native dialogs and menus**: context menus with spelling suggestions, native alerts for unsaved and external changes, Export as a sheet over the document, and Settings in a window of its own.
 - **Light and dark themes** for the whole app, following the system or chosen in Settings; exports are always light.
 - **15 languages**: English (US and UK), Portuguese (Portugal and Brazil), Spanish, French, German, Italian, Dutch, Arabic, Hindi, Japanese, Chinese (Simplified and Traditional), and Russian.
-- **Keyboard and accessibility**: shortcuts for every common action (listed in Settings), a visible focus ring, and support for reduced motion and increased contrast.
+- **Keyboard and accessibility**: shortcuts for every common action (listed in Settings), a visible focus ring, and support for reduced motion and increased contrast. With Vim navigation on, `Ctrl+M` (`⌃M` on macOS) moves a focus ring across the preview links: `j` and `k` step through them, `gg` and `G` go to the first and last, `Ctrl+D` and `Ctrl+U` scroll half a page and land on the link in the new view, and `Enter` opens a linked Markdown document in a new tab.
 
 ### Security
 

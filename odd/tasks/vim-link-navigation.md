@@ -32,9 +32,9 @@ S5. `para desactivar el modo de navegacion entre enlaces es volviendo a pulsar c
 
 | ID | Specs | Route | Commit |
 | --- | --- | --- | --- |
-| T1 Core link-navigation mode: pure logic `src/lib/plusLinkNav.ts`, DOM glue `src/hooks/usePreviewLinkNav.ts`, App wiring for Ctrl+M / j / k / gg / G / Ctrl+D / Ctrl+U / Return, focus-ring style, status indicator | S1, S2, S4, S5 | gentle-ai-worker | pending |
-| T2 Markdown-document links open in a new tab (main-process path authorization + preload + renderer) | S3 | gentle-ai-worker | pending |
-| T3 Discoverability: vim shortcut table, 15 brand locale overlays, FORK.md, README, CHANGELOG | S1-S5 | gentle-ai-worker | pending |
+| T1 Core link-navigation mode: pure logic `src/lib/plusLinkNav.ts`, DOM glue `src/hooks/usePreviewLinkNav.ts`, App wiring for Ctrl+M / j / k / gg / G / Ctrl+D / Ctrl+U / Return, focus-ring style | S1, S2, S4, S5 | gentle-ai-worker | 5d698d3 |
+| T2 Markdown-document links open in a new tab (main-process path authorization + preload + renderer) | S3 | gentle-ai-worker | f612c1c |
+| T3 Discoverability: vim shortcut table, 15 brand locale overlays, FORK.md, README, CHANGELOG | S1-S5 | gentle-ai-worker | C3 (the commit that carries this table) |
 
 ## Log
 
@@ -72,3 +72,23 @@ L3. Decisions taken by the coordinator from L2:
 - Path authorization stays in main behind one new IPC: a document link can only be opened in a tab when
   `fileCapabilities` resolves it against an already granted directory; otherwise the activation falls
   back to the existing OS delegation.
+
+L4. Implementation and verification of T1-T3:
+- T1 (`5d698d3`): `linkIndexForScroll` selects the band link monotonically with the scroll direction
+  (an earlier link still in the band can no longer pull the ring backwards); the Vim keydown handler
+  reads the mode through `linkNavRef`, so the global listener is not re-created on every ring move.
+- T2 (`f612c1c`): channel `plus:open-linked-document`; `linkedDocumentPath` claims, `resolveLinkedPath`
+  authorizes, `grantDocument` records the single authorized file. Verified independently: `/etc/passwd`,
+  `..`, `%2e%2e`, symlinks out of the opened tree, foreign hosts, directories, NUL bytes and non-Markdown
+  extensions are all refused before any grant, and the grant set never leaves the already opened tree.
+- T3 (this commit): shortcut rows `vimLinkMode` / `vimLinkActivate`, 15 brand overlays, FORK.md,
+  README, CHANGELOG.
+- Independent verifier also required the Enter guard: `Return` only activates while the preview pane (or
+  nothing) owns the keyboard, so the Vim help sheet and focused controls keep their own Enter. Fixed
+  before the commits above.
+- Known limitation (advisory, not a spec): in the virtualized preview (`very-large` size profile) only
+  mounted blocks expose links, so `gg`/`G` reach the first/last mounted link and the ring index can drift
+  after a block swap. Normal documents are unaffected.
+- Checks: `npm run typecheck` and `npm run verify` green on every unit; deterministic ad-hoc checks of
+  `plusLinkNav` and `linkedDocumentPath` were run outside the repository (RED observed first, then
+  GREEN); no test harness added, per `.ai-framework/RULES.md`. Manual GUI smoke is the user's.

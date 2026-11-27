@@ -11,6 +11,8 @@ export const VIM_SHORTCUTS: readonly VimShortcutItem[] = [
   { action: 'vimBottom', keys: ['G'] },
   { action: 'vimHalfDown', keys: ['Ctrl', 'D'], macKeys: ['Control', 'D'] },
   { action: 'vimHalfUp', keys: ['Ctrl', 'U'], macKeys: ['Control', 'U'] },
+  { action: 'vimLinkMode', keys: ['Ctrl', 'M'], macKeys: ['Control', 'M'] },
+  { action: 'vimLinkActivate', keys: ['Enter'] },
   { action: 'vimNextTab', keys: ['g', 't'] },
   { action: 'vimPrevTab', keys: ['g', 'T'] },
   { action: 'vimFocusSidebar', keys: ['Ctrl', 'H'], macKeys: ['Control', 'H'] },

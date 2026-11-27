@@ -55,6 +55,8 @@
       "vimBottom": "跳到底部",
       "vimHalfDown": "向下半页",
       "vimHalfUp": "向上半页",
+      "vimLinkMode": "链接导航模式",
+      "vimLinkActivate": "打开聚焦的链接",
       "vimNextTab": "下一个标签页",
       "vimPrevTab": "上一个标签页",
       "vimFocusSidebar": "向左聚焦（侧边栏）",

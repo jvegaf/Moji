@@ -55,6 +55,8 @@
       "vimBottom": "末尾へ移動",
       "vimHalfDown": "半ページ下へ",
       "vimHalfUp": "半ページ上へ",
+      "vimLinkMode": "リンクナビゲーションモード",
+      "vimLinkActivate": "フォーカス中のリンクを開く",
       "vimNextTab": "次のタブ",
       "vimPrevTab": "前のタブ",
       "vimFocusSidebar": "左にフォーカス（サイドバー）",

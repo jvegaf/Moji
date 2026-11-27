@@ -55,6 +55,8 @@
       "vimBottom": "Ir al final",
       "vimHalfDown": "Media página abajo",
       "vimHalfUp": "Media página arriba",
+      "vimLinkMode": "Modo de navegación por enlaces",
+      "vimLinkActivate": "Abrir enlace enfocado",
       "vimNextTab": "Pestaña siguiente",
       "vimPrevTab": "Pestaña anterior",
       "vimFocusSidebar": "Foco a la izquierda (sidebar)",

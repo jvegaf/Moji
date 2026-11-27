@@ -55,6 +55,8 @@
       "vimBottom": "Go to bottom",
       "vimHalfDown": "Half page down",
       "vimHalfUp": "Half page up",
+      "vimLinkMode": "Link navigation mode",
+      "vimLinkActivate": "Open focused link",
       "vimNextTab": "Next tab",
       "vimPrevTab": "Previous tab",
       "vimFocusSidebar": "Focus left (sidebar)",

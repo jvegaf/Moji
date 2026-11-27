@@ -55,6 +55,8 @@
       "vimBottom": "الانتقال إلى الأسفل",
       "vimHalfDown": "نصف صفحة لأسفل",
       "vimHalfUp": "نصف صفحة لأعلى",
+      "vimLinkMode": "وضع التنقل بين الروابط",
+      "vimLinkActivate": "فتح الرابط الذي عليه التركيز",
       "vimNextTab": "التبويب التالي",
       "vimPrevTab": "التبويب السابق",
       "vimFocusSidebar": "التركيز لليسار (الشريط الجانبي)",

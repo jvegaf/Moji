@@ -55,6 +55,8 @@
       "vimBottom": "अंत में जाएँ",
       "vimHalfDown": "आधा पेज नीचे",
       "vimHalfUp": "आधा पेज ऊपर",
+      "vimLinkMode": "लिंक नेविगेशन मोड",
+      "vimLinkActivate": "फ़ोकस किया गया लिंक खोलें",
       "vimNextTab": "अगला टैब",
       "vimPrevTab": "पिछला टैब",
       "vimFocusSidebar": "बाएँ फ़ोकस (साइडबार)",

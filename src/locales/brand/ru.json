@@ -55,6 +55,8 @@
       "vimBottom": "В конец",
       "vimHalfDown": "На полстраницы вниз",
       "vimHalfUp": "На полстраницы вверх",
+      "vimLinkMode": "Режим навигации по ссылкам",
+      "vimLinkActivate": "Открыть ссылку в фокусе",
       "vimNextTab": "Следующая вкладка",
       "vimPrevTab": "Предыдущая вкладка",
       "vimFocusSidebar": "Фокус влево (боковая панель)",

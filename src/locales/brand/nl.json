@@ -55,6 +55,8 @@
       "vimBottom": "Naar einde",
       "vimHalfDown": "Halve pagina omlaag",
       "vimHalfUp": "Halve pagina omhoog",
+      "vimLinkMode": "Koppelingsnavigatiemodus",
+      "vimLinkActivate": "Gefocuste koppeling openen",
       "vimNextTab": "Volgend tabblad",
       "vimPrevTab": "Vorig tabblad",
       "vimFocusSidebar": "Focus naar links (zijbalk)",

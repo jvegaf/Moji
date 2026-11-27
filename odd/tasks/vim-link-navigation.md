@@ -92,3 +92,12 @@ L4. Implementation and verification of T1-T3:
 - Checks: `npm run typecheck` and `npm run verify` green on every unit; deterministic ad-hoc checks of
   `plusLinkNav` and `linkedDocumentPath` were run outside the repository (RED observed first, then
   GREEN); no test harness added, per `.ai-framework/RULES.md`. Manual GUI smoke is the user's.
+
+L5. Native review of the slice `6fe08b3..ba5e585` (lineage `review-042cb5628844daf1`) approved and
+acknowledged, with 7 non-blocking advisories. The follow-up commit fixes the six actionable ones:
+Ctrl+D/Ctrl+U keep the full half page when the mode is on but no link element exists; Enter declines for
+a focusable control inside the preview (unless it carries the ring) so the control keeps its own key; the
+refusal comment now describes the real fallback; `linkNavOwnsFocus` became `previewOwnsKeyboard`; the
+Markdown-extension rule and the half-page distance are shared instead of duplicated. The coverage
+advisory is accepted as-is: `.ai-framework/RULES.md` forbids reintroducing a test harness, and the pure
+logic is pinned by bounded ad-hoc checks run outside the repository.

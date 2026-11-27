@@ -9,12 +9,14 @@ const DOCUMENT_EXTENSIONS: readonly string[] = [...PLUS_MARKDOWN_EXTENSIONS, ...
 const PLAIN_TEXT_EXTENSIONS: readonly string[] = PLUS_PLAIN_TEXT_EXTENSIONS
 
 /** Lowercase extension with its dot, or '' (a dotfile such as `.md` has none, as in `path.extname`). */
-function extensionOf(filePath: string): string {
+export function extensionOf(filePath: string): string {
   const match = /[^\\/.][^\\/]*?(\.[^.\\/]+)$/.exec(filePath)
   return match ? match[1].toLowerCase() : ''
 }
 
-function isMarkdownExtension(extension: string): boolean {
+/** The single Markdown-extension rule, shared with the renderer so both agree on what renders as
+ *  Markdown (src/lib/plusLinkNav.ts). Expects a lowercased extension, as `extensionOf` returns. */
+export function isMarkdownExtension(extension: string): boolean {
   return (PLUS_MARKDOWN_EXTENSIONS as readonly string[]).includes(extension)
 }
 

@@ -31,7 +31,7 @@ import { useDebounced } from './lib/useDebounced'
 import { useDocumentState, usePanelState, useSearchState, useSettingsState, useUpdateState, type WorkspaceDocument } from './hooks/useAppState'
 import { useElementWidth } from './hooks/useElementWidth'
 import { usePreviewLinkNav } from './hooks/usePreviewLinkNav'
-import type { PreviewLinkKind } from './lib/plusLinkNav'
+import { halfPageDistance, LINK_FOCUS_CLASS, type PreviewLinkKind } from './lib/plusLinkNav'
 import { getPreviewSchedule } from './lib/previewSchedule'
 import { beginRendererMeasure } from './lib/performanceMetrics'
 import { findLiteralMatches } from './lib/search'
@@ -170,6 +170,18 @@ function focusAcceptsText(): boolean {
     element instanceof HTMLSelectElement ||
     element.isContentEditable
   )
+}
+
+/**
+ * Preview content can hold its own focusable controls (task-list checkboxes, links from custom
+ * HTML, [role="button"]). Those own their Enter, so link mode must not hijack it.
+ */
+function isFocusableControl(element: Element): boolean {
+  if (element.matches('button, a[href], input, select, textarea, [contenteditable="true"], [role="button"]')) {
+    return true
+  }
+  const tabindex = element.getAttribute('tabindex')
+  return tabindex !== null && Number.parseInt(tabindex, 10) >= 0
 }
 
 /**
@@ -2227,8 +2239,8 @@ export function App(): JSX.Element {
       const href = anchor.getAttribute('href') ?? ''
       void (async (): Promise<void> => {
         // Main is the only authority: it resolves the href against the directories the user
-        // already opened. Anything it refuses falls back to the same click, so the OS still
-        // owns the link and a denied link is a no-op rather than an error.
+        // already opened. A refusal falls through to the same click delegation as any other file
+        // link, so the OS still owns the target and no dialog or error surfaces.
         const result = await window.api.openLinkedDocument(href).catch(() => null)
         if (result === null || !result.ok) {
           anchor.click()
@@ -2313,11 +2325,15 @@ export function App(): JSX.Element {
           if (previewPane) previewPane.scrollTop = top
         }
         const nav = linkNavRef.current
-        const linkNavOwnsFocus =
-          document.activeElement === null ||
-          document.activeElement === document.body ||
-          document.activeElement === previewPane ||
-          (previewPane !== null && previewPane.contains(document.activeElement))
+        // Not "link mode owns focus": the ring never takes DOM focus. This only says the preview
+        // surface owns the keyboard — nothing else is focused — so Enter is link mode's to use.
+        const activeElement = document.activeElement
+        const insidePreview = previewPane !== null && activeElement !== null && previewPane.contains(activeElement)
+        const previewOwnsKeyboard =
+          activeElement === null ||
+          activeElement === document.body ||
+          activeElement === previewPane ||
+          (insidePreview && (!isFocusableControl(activeElement) || activeElement.classList.contains(LINK_FOCUS_CLASS)))
 
         // Ctrl+M: toggle the link-navigation mode (same modifier test as Ctrl+H / Ctrl+L).
         if (onlyPrimary && !event.shiftKey && key === 'm') {
@@ -2328,9 +2344,9 @@ export function App(): JSX.Element {
         }
 
         if (nav.active && event.key === 'Enter' && !primary && !event.altKey && !altGraph) {
-          // The help sheet and focused controls keep their own Enter; only the preview pane's
-          // link mode activates a link.
-          if (vimHelpOpen || !linkNavOwnsFocus) return
+          // The help sheet and controls inside the preview (task-list checkboxes, links from
+          // custom HTML, [role="button"]) keep their own Enter; the ring's own link is still ours.
+          if (vimHelpOpen || !previewOwnsKeyboard) return
           event.preventDefault()
           clearVimSeq()
           nav.activate()
@@ -2345,7 +2361,7 @@ export function App(): JSX.Element {
             nav.halfPage(key === 'd' ? 'down' : 'up')
             return
           }
-          const half = Math.max(40, Math.floor((previewPane?.clientHeight ?? 400) / 2))
+          const half = halfPageDistance(previewPane?.clientHeight ?? 400)
           scrollPreview(key === 'd' ? half : -half)
           return
         }

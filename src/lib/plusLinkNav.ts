@@ -2,9 +2,17 @@
 // ring movement and href classification can be checked with plain Node; the DOM glue lives in
 // src/hooks/usePreviewLinkNav.ts. See FORK.md.
 
-import { PLUS_MARKDOWN_EXTENSIONS } from '../../electron/plusDocumentTypes'
+import { extensionOf, isMarkdownExtension } from '../../electron/plusDocumentTypes'
 
 export type PreviewLinkKind = 'anchor' | 'external' | 'file' | 'markdown'
+
+/** Class the hook paints on the ring's current link (src/hooks/usePreviewLinkNav.ts). */
+export const LINK_FOCUS_CLASS = 'plus-link-nav-focus'
+
+/** One half-page distance for every Vim half-page motion, in link mode and out of it. */
+export function halfPageDistance(viewportHeight: number): number {
+  return Math.max(40, Math.floor(viewportHeight / 2))
+}
 
 /** What a rendered preview anchor points at. The DOM href is already absolute for file links
  *  (src/lib/markdownCore.ts), so this sees the same URL the click delegation would. */
@@ -14,7 +22,7 @@ export function classifyPreviewHref(href: string): PreviewLinkKind {
   if (/^(?:https?|mailto|tel):/i.test(value)) return 'external'
   if (!/^file:/i.test(value)) return 'file'
 
-  return hasMarkdownExtension(fileUrlPath(value)) ? 'markdown' : 'file'
+  return isMarkdownExtension(extensionOf(fileUrlPath(value))) ? 'markdown' : 'file'
 }
 
 function fileUrlPath(href: string): string {
@@ -23,12 +31,6 @@ function fileUrlPath(href: string): string {
   } catch {
     return href.replace(/^file:/i, '')
   }
-}
-
-function hasMarkdownExtension(path: string): boolean {
-  const match = /[^\\/.][^\\/]*?(\.[^.\\/]+)$/.exec(path)
-  const extension = match ? match[1].toLowerCase() : ''
-  return (PLUS_MARKDOWN_EXTENSIONS as readonly string[]).includes(extension)
 }
 
 export interface PreviewLinkBand {

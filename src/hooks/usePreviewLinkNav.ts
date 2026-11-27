@@ -7,13 +7,14 @@ import {
   clampLinkIndex,
   classifyPreviewHref,
   firstVisibleLinkIndex,
+  halfPageDistance,
+  LINK_FOCUS_CLASS,
   linkIndexForScroll,
   stepLinkIndex,
   type PreviewLinkBand,
   type PreviewLinkKind
 } from '../lib/plusLinkNav'
 
-const FOCUS_CLASS = 'plus-link-nav-focus'
 const KEEP_VISIBLE_MARGIN = 24
 const LINK_SELECTOR = '.markdown-body a[href]'
 
@@ -122,15 +123,20 @@ export function usePreviewLinkNav({ pane, enabled, documentId, html, activateLin
     (direction: 'down' | 'up'): void => {
       if (!stateRef.current.active || !pane) return
       const links = collectLinks(pane)
-      if (links.length === 0) return
-      const bands = linkBands(pane, links)
-      const half = Math.max(40, Math.floor(pane.clientHeight / 2))
+      const half = halfPageDistance(pane.clientHeight)
       pane.scrollTop += direction === 'down' ? half : -half
+      // A document that exposes no links (or lost them to a block swap) still gets the whole
+      // half page, the same distance the mode-off path scrolls; the mode stays on with index -1,
+      // so no ring is painted and a link reappearing later can take it.
+      if (links.length === 0) {
+        setNav({ active: true, index: -1 })
+        return
+      }
       const viewportTop = pane.scrollTop
       focusIndex(
         links,
         linkIndexForScroll({
-          links: bands,
+          links: linkBands(pane, links),
           currentIndex: stateRef.current.index,
           viewportTop,
           viewportBottom: viewportTop + pane.clientHeight,
@@ -138,7 +144,7 @@ export function usePreviewLinkNav({ pane, enabled, documentId, html, activateLin
         })
       )
     },
-    [focusIndex, pane]
+    [focusIndex, pane, setNav]
   )
 
   const activate = useCallback((): void => {
@@ -158,9 +164,9 @@ export function usePreviewLinkNav({ pane, enabled, documentId, html, activateLin
   useEffect(() => {
     if (!pane) return
     const links = collectLinks(pane)
-    links.forEach((link, index) => link.classList.toggle(FOCUS_CLASS, state.active && index === state.index))
+    links.forEach((link, index) => link.classList.toggle(LINK_FOCUS_CLASS, state.active && index === state.index))
     return () => {
-      for (const link of links) link.classList.remove(FOCUS_CLASS)
+      for (const link of links) link.classList.remove(LINK_FOCUS_CLASS)
     }
   }, [html, pane, state.active, state.index])
 

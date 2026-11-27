@@ -30,6 +30,8 @@ import { buildSplitAnchors, editorLineForPreviewTop, headingIdForLine, previewTo
 import { useDebounced } from './lib/useDebounced'
 import { useDocumentState, usePanelState, useSearchState, useSettingsState, useUpdateState, type WorkspaceDocument } from './hooks/useAppState'
 import { useElementWidth } from './hooks/useElementWidth'
+import { usePreviewLinkNav } from './hooks/usePreviewLinkNav'
+import type { PreviewLinkKind } from './lib/plusLinkNav'
 import { getPreviewSchedule } from './lib/previewSchedule'
 import { beginRendererMeasure } from './lib/performanceMetrics'
 import { findLiteralMatches } from './lib/search'
@@ -2214,6 +2216,42 @@ export function App(): JSX.Element {
     void document.documentElement.requestFullscreen()
   }, [])
 
+  // Moji Plus: Ctrl+M moves a visual ring across the preview links (see FORK.md).
+  const activatePreviewLink = useCallback(
+    (anchor: HTMLAnchorElement, kind: PreviewLinkKind): void => {
+      // Anchors, external URLs and non-markdown files keep the delegation they already had.
+      if (kind !== 'markdown') {
+        anchor.click()
+        return
+      }
+      const href = anchor.getAttribute('href') ?? ''
+      void (async (): Promise<void> => {
+        // Main is the only authority: it resolves the href against the directories the user
+        // already opened. Anything it refuses falls back to the same click, so the OS still
+        // owns the link and a denied link is a no-op rather than an error.
+        const result = await window.api.openLinkedDocument(href).catch(() => null)
+        if (result === null || !result.ok) {
+          anchor.click()
+          return
+        }
+        await openPaths([result.path])
+      })()
+    },
+    [openPaths]
+  )
+
+  const linkNav = usePreviewLinkNav({
+    pane: previewPaneElement,
+    enabled: settings.vimNavigation,
+    documentId: activeDocId,
+    html,
+    activateLink: activatePreviewLink
+  })
+  // The keydown listener must survive ring moves: it reads the mode through this ref instead of
+  // listing the whole memo (which changes on every j/k) as a dependency.
+  const linkNavRef = useRef(linkNav)
+  linkNavRef.current = linkNav
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.isComposing || dialogOpen || externalDialog) return
@@ -2274,11 +2312,39 @@ export function App(): JSX.Element {
         const scrollPreviewTo = (top: number): void => {
           if (previewPane) previewPane.scrollTop = top
         }
+        const nav = linkNavRef.current
+        const linkNavOwnsFocus =
+          document.activeElement === null ||
+          document.activeElement === document.body ||
+          document.activeElement === previewPane ||
+          (previewPane !== null && previewPane.contains(document.activeElement))
+
+        // Ctrl+M: toggle the link-navigation mode (same modifier test as Ctrl+H / Ctrl+L).
+        if (onlyPrimary && !event.shiftKey && key === 'm') {
+          event.preventDefault()
+          clearVimSeq()
+          nav.toggle()
+          return
+        }
+
+        if (nav.active && event.key === 'Enter' && !primary && !event.altKey && !altGraph) {
+          // The help sheet and focused controls keep their own Enter; only the preview pane's
+          // link mode activates a link.
+          if (vimHelpOpen || !linkNavOwnsFocus) return
+          event.preventDefault()
+          clearVimSeq()
+          nav.activate()
+          return
+        }
 
         // Ctrl+d / Ctrl+u: half-page scroll (Vim-style), only when Vim nav is enabled.
         if (onlyPrimary && !event.shiftKey && (key === 'd' || key === 'u')) {
           event.preventDefault()
           clearVimSeq()
+          if (nav.active) {
+            nav.halfPage(key === 'd' ? 'down' : 'up')
+            return
+          }
           const half = Math.max(40, Math.floor((previewPane?.clientHeight ?? 400) / 2))
           scrollPreview(key === 'd' ? half : -half)
           return
@@ -2295,7 +2361,8 @@ export function App(): JSX.Element {
             if (isPlainG) {
               event.preventDefault()
               clearVimSeq()
-              scrollPreviewTo(0)
+              if (nav.active) nav.first()
+              else scrollPreviewTo(0)
               return
             }
             if (isPlainT) {
@@ -2321,21 +2388,24 @@ export function App(): JSX.Element {
           if (isShiftG) {
             event.preventDefault()
             clearVimSeq()
-            scrollPreviewTo(previewPane?.scrollHeight ?? 0)
+            if (nav.active) nav.last()
+            else scrollPreviewTo(previewPane?.scrollHeight ?? 0)
             return
           }
           if (key === 'j' && !event.shiftKey) {
             if (document.activeElement?.closest('.sidebar')) return
             event.preventDefault()
             clearVimSeq()
-            scrollPreview(60)
+            if (nav.active) nav.move(1)
+            else scrollPreview(60)
             return
           }
           if (key === 'k' && !event.shiftKey) {
             if (document.activeElement?.closest('.sidebar')) return
             event.preventDefault()
             clearVimSeq()
-            scrollPreview(-60)
+            if (nav.active) nav.move(-1)
+            else scrollPreview(-60)
             return
           }
           if (event.key === '/' && !event.shiftKey) {

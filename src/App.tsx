@@ -2238,18 +2238,31 @@ export function App(): JSX.Element {
       }
       const href = anchor.getAttribute('href') ?? ''
       void (async (): Promise<void> => {
+        // A window started before the preload change (renderer HMR does not rebuild it) has no
+        // such method: reading it off the bridge would throw where nothing can see it, so the
+        // activation would die silently instead of reaching the click delegation below.
+        const openLinked = typeof window.api.openLinkedDocument === 'function' ? window.api.openLinkedDocument : null
         // Main is the only authority: it resolves the href against the directories the user
-        // already opened. A refusal falls through to the same click delegation as any other file
-        // link, so the OS still owns the target and no dialog or error surfaces.
-        const result = await window.api.openLinkedDocument(href).catch(() => null)
+        // already opened. Every refusal — no bridge, a rejection, a denial — falls through to the
+        // same click delegation as any other file link, so the OS still owns the target.
+        const result = openLinked === null ? null : await openLinked(href).catch(() => null)
         if (result === null || !result.ok) {
           anchor.click()
           return
         }
-        await openPaths([result.path])
+        try {
+          await openPaths([result.path])
+        } catch (error) {
+          // Authorised but never read into a tab: that activation is impossible here, so it is
+          // reported with the notice the app already uses for a failed open, and the delegation
+          // still gets its attempt.
+          const message = error instanceof Error ? error.message : String(error)
+          flash(t('notice.openFailed', { error: friendlyErrorMessage(message, t) }), true)
+          anchor.click()
+        }
       })()
     },
-    [openPaths]
+    [flash, openPaths, t]
   )
 
   const linkNav = usePreviewLinkNav({

@@ -12,6 +12,7 @@ import {
   type ExportProgress,
   type ExportRequest,
   type OpenDialogResult,
+  type OpenLinkedDocumentResult,
   type OpenManyDone,
   type OpenManyProgress,
   type OpenResult,
@@ -108,6 +109,8 @@ const api = {
   cancelOpenMany: (sessionId: string): Promise<void> => ipcRenderer.invoke(IPC.cancelOpenMany, sessionId),
   readPath: (filePath: string): Promise<OpenResult> => readDocumentStream(filePath),
   openLocalPath: (fileUrl: string): Promise<WriteResult> => ipcRenderer.invoke(IPC.openLocalPath, fileUrl),
+  openLinkedDocument: (fileUrl: string): Promise<OpenLinkedDocumentResult> =>
+    ipcRenderer.invoke(IPC.openLinkedDocument, fileUrl),
   readSample: (sampleName: string): Promise<OpenResult> => ipcRenderer.invoke(IPC.readSample, sampleName),
   save: (filePath: string, content: string, options?: SaveOptions): Promise<WriteResult> =>
     ipcRenderer.invoke(IPC.save, filePath, content, options),

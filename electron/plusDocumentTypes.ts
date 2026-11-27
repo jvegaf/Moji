@@ -14,6 +14,10 @@ function extensionOf(filePath: string): string {
   return match ? match[1].toLowerCase() : ''
 }
 
+function isMarkdownExtension(extension: string): boolean {
+  return (PLUS_MARKDOWN_EXTENSIONS as readonly string[]).includes(extension)
+}
+
 export function isPlusDocumentExtension(extension: string): boolean {
   return DOCUMENT_EXTENSIONS.includes(extension.toLowerCase())
 }
@@ -24,6 +28,43 @@ export function hasPlusDocumentExtension(filePath: string): boolean {
 
 export function isPlainTextPath(filePath: string | null | undefined): boolean {
   return typeof filePath === 'string' && PLAIN_TEXT_EXTENSIONS.includes(extensionOf(filePath))
+}
+
+/**
+ * Moji Plus: the Markdown document a preview link points at, or `null` when it is not one.
+ *
+ * Rendered hrefs come from document content, so this is untrusted input: it only recognises an
+ * absolute local `file:` URL whose path names a Markdown file, never a directory, never a NUL
+ * byte, and never another scheme. What it returns is a claim, not permission — the main process
+ * still has to resolve it against the directories the user actually opened (see FORK.md).
+ */
+export function linkedDocumentPath(href: string): string | null {
+  if (typeof href !== 'string') return null
+  const value = href.trim()
+  if (!/^file:/i.test(value) || value.includes('\0')) return null
+
+  let url: URL
+  try {
+    url = new URL(value)
+  } catch {
+    return null
+  }
+  // `file://host/...` names another machine's file; only a local one can be opened here.
+  if (url.protocol !== 'file:') return null
+  if (url.hostname !== '' && url.hostname.toLowerCase() !== 'localhost') return null
+
+  let filePath: string
+  try {
+    filePath = decodeURIComponent(url.pathname)
+  } catch {
+    return null
+  }
+  if (filePath.includes('\0')) return null
+  // Windows file URLs carry the drive as `/C:/…`; everything else here speaks plain paths.
+  if (/^\/[A-Za-z]:[\\/]/.test(filePath)) filePath = filePath.slice(1)
+  if (!filePath.startsWith('/') && !/^[A-Za-z]:[\\/]/.test(filePath)) return null
+  if (filePath.endsWith('/') || filePath.endsWith('\\')) return null
+  return isMarkdownExtension(extensionOf(filePath)) ? filePath : null
 }
 
 interface FileFilter {

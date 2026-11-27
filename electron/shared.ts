@@ -258,6 +258,12 @@ export type WriteResult =
   | { ok: true; path: string }
   | { ok: false; canceled?: boolean; error?: string }
 
+/** Moji Plus: result of asking main to open a preview link's Markdown document in its own tab.
+ *  A denial carries no path at all, so the renderer can only fall back to OS delegation. */
+export type OpenLinkedDocumentResult =
+  | { ok: true; path: string }
+  | { ok: false; error: string }
+
 export type UpdateStatus =
   | 'unsupported'
   | 'idle'
@@ -369,5 +375,7 @@ export const IPC = {
   setContextMenuLabels: 'plus:set-context-menu-labels',
   showMessageBox: 'plus:show-message-box',
   openSettingsWindow: 'plus:open-settings-window',
+  /** Renderer -> main: grant a preview link's Markdown document for its own tab. */
+  openLinkedDocument: 'plus:open-linked-document',
   settingsChanged: 'plus:settings-changed'
 } as const

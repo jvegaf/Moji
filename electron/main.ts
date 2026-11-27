@@ -15,6 +15,7 @@ import {
   type DraftPersistProblem,
   type DraftResult,
   type OpenDialogResult,
+  type OpenLinkedDocumentResult,
   type OpenResult,
   type RestoredDraft,
   type Settings,
@@ -29,7 +30,7 @@ import { areDraftEditBatches } from './draftJournal'
 import { assetContentType, assetPathFromUrl, authorizedAsset } from './assetPaths'
 import { FileCapabilities } from './fileCapabilities'
 import { isMarkdown, sanitizeDraft, sanitizeSettingsPatch, suggestedMarkdownName } from './ipcInput'
-import { plusOpenDialogFilters, plusSaveDialogFilters } from './plusDocumentTypes'
+import { linkedDocumentPath, plusOpenDialogFilters, plusSaveDialogFilters } from './plusDocumentTypes'
 import { cancelExport, exportDiagramPng, exportDocument } from './export'
 import { benchmarkRequested, recordBenchmark } from './benchmark'
 import { createUpdateController, type UpdateController } from './updater'
@@ -376,6 +377,26 @@ async function openLocalPath(fileUrl: unknown): Promise<WriteResult> {
   } catch (err) {
     return { ok: false, error: (err as Error).message }
   }
+}
+
+/**
+ * Moji Plus: a preview link that points at another Markdown document of this workspace.
+ *
+ * The href comes from document content, so it is untrusted: the pure helper only names a local
+ * Markdown file, and `capabilities` still decides whether that file sits inside a directory the
+ * user already opened. A denial is typed and silent — no shell call, no dialog, no error log —
+ * and the renderer falls back to the OS delegation it would have used anyway (see FORK.md).
+ */
+async function openLinkedDocument(fileUrl: unknown): Promise<OpenLinkedDocumentResult> {
+  const linkedPath = typeof fileUrl === 'string' ? linkedDocumentPath(fileUrl) : null
+  if (!linkedPath) return { ok: false, error: 'unsupported' }
+
+  const authorizedPath = await capabilities.resolveLinkedPath(linkedPath)
+  if (!authorizedPath) return { ok: false, error: 'forbidden' }
+  // Exactly the grant a normal open makes, for this one file: `grant` records the file itself
+  // and its own directory, never a parent of the directory that was already authorised.
+  grantDocument(authorizedPath)
+  return { ok: true, path: authorizedPath }
 }
 
 /**
@@ -1019,6 +1040,8 @@ function registerIpc(): void {
   })
 
   handleFromRenderer(IPC.openLocalPath, (_e, fileUrl: unknown): Promise<WriteResult> => openLocalPath(fileUrl))
+
+  handleFromRenderer(IPC.openLinkedDocument, (_e, fileUrl: unknown): Promise<OpenLinkedDocumentResult> => openLinkedDocument(fileUrl))
 
   handleFromRenderer(IPC.readSample, (_e, name: unknown): Promise<OpenResult> => {
     const path = samplePath(name)
